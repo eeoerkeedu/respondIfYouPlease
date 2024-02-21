@@ -1,91 +1,101 @@
-const { User } = require('../models');
-const { signToken, AuthenticationError } = require('../utils/auth');
+const { User, Guest } = require("../models");
+const { signToken, AuthenticationError } = require("../utils/auth");
 
 const resolvers = {
-  Query: {
-    me: async (parent, args, context) => {
-      if (context.user) {
-        const userData = await User.findOne({ _id: context.user._id }).select('-__v -password');
+	Query: {
+		me: async (parent, args, context) => {
+			if (context.user) {
+				const userData = await User.findOne({ _id: context.user._id }).select(
+					"-__v -password"
+				);
 
-        return userData;
-      }
+				return userData;
+			}
 
-      throw AuthenticationError;
-    },
-    guests: async (parent, {eventId}, context) => {
-      if (eventId){
-        const eventData = await Event.findById({eventId: eventId}).populate('rsvps');
-        return eventData
-      }
-    },
-    myEvents: async (parent, args, context) => {
-      if (context.user){
-        const userData = await User.findOne({ _id: context.user._id }).populate('createdEvents');
-      }
-    }
-  },
+			throw AuthenticationError;
+		},
+		guests: async (parent, { eventId }, context) => {
+			if (eventId) {
+				const eventData = await Event.findById({ eventId: eventId }).populate(
+					"rsvps"
+				);
+				return eventData;
+			}
+		},
+		// myEvents: async (parent, args, context) => {
+		// 	if (context.user) {
+		// 		const userData = await User.findOne({ _id: context.user._id }).populate(
+		// 			"createdEvents"
+		// 		);
+		// 	}
+		// },
+	},
 
-  Mutation: {
-    addUser: async (parent, args) => {
-      const user = await User.create(args);
-      const token = signToken(user);
+	Mutation: {
+		addUser: async (parent, args) => {
+			const user = await User.create(args);
+			const token = signToken(user);
 
-      return { token, user };
-    },
-    login: async (parent, { email, password }) => {
-      const user = await User.findOne({ email });
+			return { token, user };
+		},
+		login: async (parent, { email, password }) => {
+			const user = await User.findOne({ email });
 
-      if (!user) {
-        throw AuthenticationError;
-      }
+			if (!user) {
+				throw AuthenticationError;
+			}
 
-      const correctPw = await user.isCorrectPassword(password);
+			const correctPw = await user.isCorrectPassword(password);
 
-      if (!correctPw) {
-        throw AuthenticationError;
-      }
+			if (!correctPw) {
+				throw AuthenticationError;
+			}
 
-      const token = signToken(user);
-      return { token, user };
-    },
-    rsvp: async (parent, { guestInput, eventInput }, context) => {
-      if (guestInput && eventInput) {
-        const updateEvent = await Event.findByIdAndUpdate(
-          { eventId: eventInput.eventId },
-          { $push: { rsvps: guestInput.guestId } },
-          { new: true }
-        );
+			const token = signToken(user);
+			return { token, user };
+		},
+		createEvent: async (parent, { EventInput }, context) => {
+			if (EventInput && context.user) {
+				const newEvent = await Event.create(EventInput);
+				const updatedUser = await Event.findByIdAndUpdate(
+					{ eventId: EventInput.eventId },
+					{ $push: { createdEvents: newEvent.eventId } },
+					{ new: true }
+				);
+				return { newEvent, updatedUser };
+			}
+		},
 
-        return updateEvent;
-      }
+		rsvp: async (parent, { GuestInput, EventInput }, context) => {
+			if (GuestInput && EventInput) {
+				const updateEvent = await Event.findByIdAndUpdate(
+					{ eventId: EventInput.eventId },
+					{ $push: { rsvps: GuestInput.guestId } },
+					{ new: true }
+				);
+				const newGuest = await Guest.create(GuestInput);
 
-      throw AuthenticationError;
-    },
-    createEvent: async (parent, {eventInput}, context) => {
-      if (eventInput && context.user) {
-        const newEvent = await Event.create(eventData)
-        const updatedUser = await Event.findByIdAndUpdate(          
-          { eventId: eventInput.eventId },
-          { $push: { createdEvents: newEvent.eventId } },
-          { new: true });
-        return {newEvent, updatedUser}
-      }
-    },
-    
-    // removeBook: async (parent, { bookId }, context) => {
-    //   if (context.user) {
-    //     const updatedUser = await User.findOneAndUpdate(
-    //       { _id: context.user._id },
-    //       { $pull: { savedBooks: { bookId } } },
-    //       { new: true }
-    //     );
+				return { updateEvent, newGuest };
+			}
 
-    //     return updatedUser;
-    //   }
+			throw AuthenticationError;
+		},
 
-    //   throw AuthenticationError;
-    // },
-  },
+		removeRSVP: async (parent, { guestId, eventId }, context) => {
+			if (guestId && eventId) {
+				const updatedEvent = await Event.findOneAndUpdate(
+					{ eventId: eventId },
+					{ $pull: { guest: guestId } },
+					{ new: true }
+				);
+				const removedGuest = await Guest.findOneAndDelete({ guestId: guestId });
+
+				return updatedEvent;
+			}
+
+			throw AuthenticationError;
+		},
+	},
 };
 
 module.exports = resolvers;

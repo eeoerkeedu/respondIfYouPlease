@@ -1,30 +1,37 @@
-const { Schema, model } = require('mongoose');
+const { Schema, model } = require("mongoose");
 
 // import schema from Guest.js
-const guestSchema = require('./Guest');
+const guestSchema = require("./Guest");
 
 const eventSchema = new Schema(
-  {
-    eventName: {
-      type: String,
-      required: true,
-    },
-    eventDate: {
-      type: Date,
-    },
-    Location: {
-      type: String,
-    },
-    rsvps: [{
-        type: Schema.Types.ObjectId,
-        ref:  "guestSchma"}]
-  },
-  // set this to use virtual below
-  {
-    toJSON: {
-      virtuals: true,
-    },
-  }
+	{
+		eventName: {
+			type: String,
+			required: true,
+		},
+		description: {
+			type: String,
+			required: true,
+		},
+		eventDate: {
+			type: Date,
+		},
+		Location: {
+			type: String,
+		},
+		rsvps: [
+			{
+				type: Schema.Types.ObjectId,
+				ref: "guestSchma",
+			},
+		],
+	},
+	// set this to use virtual below
+	{
+		toJSON: {
+			virtuals: true,
+		},
+	}
 );
 
 // when we query an event, we'll also get another field called `guestCount` with the number of rsvp's
@@ -32,6 +39,6 @@ const eventSchema = new Schema(
 //   return this.rsvps.length;
 // });
 
-const Event = model('Event', eventSchema);
+const Event = model("Event", eventSchema);
 
 module.exports = Event;

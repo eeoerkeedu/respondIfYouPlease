@@ -1,45 +1,65 @@
-const typeDefs = `
-  type User {
-    _id: ID!
-    username: String!
-    email: String
-    bookCount: Int
-    savedBooks: [Book]
-  }
+import { gql } from "@apollo/client";
 
-  type Book {
-    bookId: ID!
-    authors: [String]
-    description: String
-    image: String
-    link: String
-    title: String!
-  }
+const typeDefs = gql`
+	type User {
+		_id: ID!
+		username: String!
+		email: String!
+		phoneNum: Int
+		createdEvents: [Event]
+	}
 
-  type Auth {
-    token: ID!
-    user: User
-  }
+	type Event {
+		eventId: ID!
+		eventName: String
+		description: String
+		eventDate: Date
+		Location: String
+		rsvps: [Guest]
+	}
 
-  input BookInput {
-    authors: [String]
-    description: String!
-    bookId: String!
-    image: String
-    link: String
-    title: String!
-  }
+	type Guest {
+		guestId: ID!
+		guestName: String!
+		email: String!
+		phoneNum: Int
+		additionalGuestCount: Int!
+	}
 
-  type Query {
-    me: User
-  }
+	type Auth {
+		token: ID!
+		user: User
+	}
 
-  type Mutation {
-    login(email: String!, password: String!): Auth
-    addUser(username: String!, email: String!, password: String!): Auth
-    saveBook(bookData: BookInput!): User
-    removeBook(bookId: ID!): User
-  }
+	input EventInput {
+		eventId: ID!
+		eventName: String
+		description: String
+		eventDate: Date
+		Location: String
+		rsvps: [Guest]
+	}
+
+	type GuestInput {
+		guestId: ID!
+		guestName: String!
+		email: String!
+		phoneNum: Int
+		additionalGuestCount: Int!
+	}
+
+	type Query {
+		me: User
+		guests(eventId: ID!): Event
+	}
+
+	type Mutation {
+		login(email: String!, password: String!): Auth
+		addUser(username: String!, email: String!, password: String!): Auth
+		createdEvent(EventInput: EventInput!): Event
+		rsvp(GuestInput: GuestInput!, EventInput: EventInput!): Event
+		removeRSVP(guestId: ID!, guestId: ID!): Event
+	}
 `;
 
 module.exports = typeDefs;
