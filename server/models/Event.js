@@ -14,15 +14,15 @@ const eventSchema = new Schema(
 			required: true,
 		},
 		eventDate: {
-			type: Date,
+			type: Number,
 		},
-		Location: {
+		location: {
 			type: String,
 		},
 		rsvps: [
 			{
 				type: Schema.Types.ObjectId,
-				ref: "guestSchma",
+				ref: "Guest",
 			},
 		],
 	},

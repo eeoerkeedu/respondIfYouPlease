@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+const { gql } = require("apollo-server-express");
 
 const typeDefs = gql`
 	type User {
@@ -11,10 +11,10 @@ const typeDefs = gql`
 
 	type Event {
 		eventId: ID!
-		eventName: String
-		description: String
-		eventDate: Date
-		Location: String
+		eventName: String!
+		description: String!
+		eventDate: Int
+		location: String
 		rsvps: [Guest]
 	}
 
@@ -32,15 +32,13 @@ const typeDefs = gql`
 	}
 
 	input EventInput {
-		eventId: ID!
-		eventName: String
-		description: String
-		eventDate: Date
-		Location: String
-		rsvps: [Guest]
+		eventName: String!
+		description: String!
+		eventDate: Int
+		location: String
 	}
 
-	type GuestInput {
+	input GuestInput {
 		guestId: ID!
 		guestName: String!
 		email: String!
@@ -50,15 +48,20 @@ const typeDefs = gql`
 
 	type Query {
 		me: User
-		guests(eventId: ID!): Event
+		guests(eventId: ID!): [Guest]
 	}
 
 	type Mutation {
 		login(email: String!, password: String!): Auth
 		addUser(username: String!, email: String!, password: String!): Auth
-		createdEvent(EventInput: EventInput!): Event
-		rsvp(GuestInput: GuestInput!, EventInput: EventInput!): Event
-		removeRSVP(guestId: ID!, guestId: ID!): Event
+		createEvent(
+			eventName: String!
+			description: String!
+			eventDate: Int
+			location: String
+		): Event
+		rsvp(GuestInput: GuestInput!, eventId: ID!): Event
+		removeRSVP(guestId: ID!, eventId: ID!): Event
 	}
 `;
 

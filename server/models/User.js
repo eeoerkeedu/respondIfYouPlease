@@ -29,7 +29,7 @@ const userSchema = new Schema(
 			required: true,
 		},
 		// set savedBooks to be an array of data that adheres to the bookSchema
-		createdEvents: [{ type: Schema.Types.ObjectId, ref: "eventSchema" }],
+		createdEvents: [{ type: Schema.Types.ObjectId, ref: "Event" }],
 	},
 	// set this to use virtual below
 	{

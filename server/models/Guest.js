@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 // import schema from Guest.js
 const eventSchema = require("./Event");
 
-const userSchema = new Schema(
+const guestSchema = new Schema(
 	{
 		guestName: {
 			type: String,

@@ -1,13 +1,14 @@
-const { User, Guest } = require("../models");
+const { User, Guest, Event } = require("../models");
 const { signToken, AuthenticationError } = require("../utils/auth");
 
 const resolvers = {
 	Query: {
 		me: async (parent, args, context) => {
 			if (context.user) {
-				const userData = await User.findOne({ _id: context.user._id }).select(
-					"-__v -password"
+				const userData = await User.findById(context.user._id).populate(
+					"createdEvents"
 				);
+				console.log(userData);
 
 				return userData;
 			}
@@ -54,22 +55,24 @@ const resolvers = {
 			const token = signToken(user);
 			return { token, user };
 		},
-		createEvent: async (parent, { EventInput }, context) => {
-			if (EventInput && context.user) {
-				const newEvent = await Event.create(EventInput);
-				const updatedUser = await Event.findByIdAndUpdate(
-					{ eventId: EventInput.eventId },
-					{ $push: { createdEvents: newEvent.eventId } },
+		createEvent: async (parent, args, context) => {
+			// console.log(args);
+			if (args && context.user) {
+				const newEvent = await Event.create(args);
+				const updatedUser = await User.findByIdAndUpdate(
+					{ _id: context.user._id },
+					{ $push: { createdEvents: newEvent._id } },
 					{ new: true }
 				);
-				return { newEvent, updatedUser };
+				// console.log(newEvent, updatedUser);
+				// return { newEvent, updatedUser };
 			}
 		},
 
-		rsvp: async (parent, { GuestInput, EventInput }, context) => {
-			if (GuestInput && EventInput) {
+		rsvp: async (parent, { GuestInput, eventId }, context) => {
+			if (GuestInput && eventId) {
 				const updateEvent = await Event.findByIdAndUpdate(
-					{ eventId: EventInput.eventId },
+					{ eventId: eventId },
 					{ $push: { rsvps: GuestInput.guestId } },
 					{ new: true }
 				);
