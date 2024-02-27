@@ -55,17 +55,17 @@ const resolvers = {
 			const token = signToken(user);
 			return { token, user };
 		},
-		createEvent: async (parent, args, context) => {
-			// console.log(args);
-			if (args && context.user) {
-				const newEvent = await Event.create(args);
+		createEvent: async (parent, { eventData }, context) => {
+			// console.log(eventData);
+			if (eventData && context.user) {
+				const newEvent = await Event.create(eventData);
 				const updatedUser = await User.findByIdAndUpdate(
 					{ _id: context.user._id },
 					{ $push: { createdEvents: newEvent._id } },
 					{ new: true }
 				);
 				// console.log(newEvent, updatedUser);
-				// return { newEvent, updatedUser };
+				return { newEvent, updatedUser };
 			}
 		},
 
