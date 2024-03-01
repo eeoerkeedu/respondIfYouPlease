@@ -70,12 +70,12 @@ const resolvers = {
 			}
 		},
 
-		rsvp: async (parent, { GuestInput, _id }, context) => {
-			// console.log(GuestInput, _id);
-			if (GuestInput && _id) {
+		rsvp: async (parent, { GuestInput, eventId }, context) => {
+			// console.log(GuestInput, eventId);
+			if (GuestInput && eventId) {
 				const newGuest = await Guest.create(GuestInput);
 				const updateEvent = await Event.findByIdAndUpdate(
-					{ _id: _id },
+					{ _id: eventId },
 					{ $push: { rsvps: newGuest._id } },
 					{ new: true }
 				);
@@ -87,15 +87,16 @@ const resolvers = {
 			throw AuthenticationError;
 		},
 
-		removeRSVP: async (parent, { guestId, eventId }, context) => {
-			if (guestId && eventId) {
+		removeRSVP: async (parent, { eventId, guestId }, context) => {
+			// console.log(args);
+			if (eventId && guestId) {
 				const updatedEvent = await Event.findOneAndUpdate(
-					{ eventId: eventId },
-					{ $pull: { guest: guestId } },
+					{ _id: eventId },
+					{ $pull: { rsvps: guestId } },
 					{ new: true }
 				);
-				const removedGuest = await Guest.findOneAndDelete({ guestId: guestId });
-
+				const removedGuest = await Guest.findOneAndDelete({ _id: guestId });
+				console.log(updatedEvent, removedGuest);
 				return updatedEvent;
 			}
 

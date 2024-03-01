@@ -47,15 +47,15 @@ const typeDefs = gql`
 
 	type Query {
 		me: User
-		guests(eventId: ID!): [Guest]
+		guests(_id: ID!): [Guest]
 	}
 
 	type Mutation {
 		login(email: String!, password: String!): Auth
 		addUser(username: String!, email: String!, password: String!): Auth
 		createEvent(eventData: EventInput!): Event
-		rsvp(GuestInput: GuestInput!, _id: ID!): Event
-		removeRSVP(guestId: ID!, eventId: ID!): Event
+		rsvp(GuestInput: GuestInput!, eventId: ID!): Event
+		removeRSVP(eventId: ID!, guestId: ID!): Event
 	}
 `;
 
