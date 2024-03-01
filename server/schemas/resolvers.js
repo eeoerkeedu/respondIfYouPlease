@@ -64,19 +64,22 @@ const resolvers = {
 					{ $push: { createdEvents: newEvent._id } },
 					{ new: true }
 				);
+
 				// console.log(newEvent, updatedUser);
 				return { newEvent, updatedUser };
 			}
 		},
 
-		rsvp: async (parent, { GuestInput, eventId }, context) => {
-			if (GuestInput && eventId) {
+		rsvp: async (parent, { GuestInput, _id }, context) => {
+			// console.log(GuestInput, _id);
+			if (GuestInput && _id) {
+				const newGuest = await Guest.create(GuestInput);
 				const updateEvent = await Event.findByIdAndUpdate(
-					{ eventId: eventId },
-					{ $push: { rsvps: GuestInput.guestId } },
+					{ _id: _id },
+					{ $push: { rsvps: newGuest._id } },
 					{ new: true }
 				);
-				const newGuest = await Guest.create(GuestInput);
+				// console.log(updateEvent, newGuest);
 
 				return { updateEvent, newGuest };
 			}

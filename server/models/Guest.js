@@ -9,7 +9,6 @@ const guestSchema = new Schema(
 		guestName: {
 			type: String,
 			required: true,
-			unique: true,
 		},
 		email: {
 			type: String,
@@ -18,7 +17,11 @@ const guestSchema = new Schema(
 			match: [/.+@.+\..+/, "Must use a valid email address"],
 		},
 		phoneNum: {
-			type: Number,
+			type: String,
+			match: [
+				/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/,
+				"Must Enter a Vaild Phone Number",
+			],
 		},
 		additionalGuestCount: {
 			type: Number,

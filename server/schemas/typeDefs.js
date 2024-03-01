@@ -19,10 +19,10 @@ const typeDefs = gql`
 	}
 
 	type Guest {
-		guestId: ID!
+		_id: ID!
 		guestName: String!
 		email: String!
-		phoneNum: Int
+		phoneNum: String
 		additionalGuestCount: Int!
 	}
 
@@ -39,10 +39,9 @@ const typeDefs = gql`
 	}
 
 	input GuestInput {
-		guestId: ID!
 		guestName: String!
 		email: String!
-		phoneNum: Int
+		phoneNum: String
 		additionalGuestCount: Int!
 	}
 
@@ -55,7 +54,7 @@ const typeDefs = gql`
 		login(email: String!, password: String!): Auth
 		addUser(username: String!, email: String!, password: String!): Auth
 		createEvent(eventData: EventInput!): Event
-		rsvp(GuestInput: GuestInput!, eventId: ID!): Event
+		rsvp(GuestInput: GuestInput!, _id: ID!): Event
 		removeRSVP(guestId: ID!, eventId: ID!): Event
 	}
 `;
