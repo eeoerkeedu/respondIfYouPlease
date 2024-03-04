@@ -56,6 +56,7 @@ const typeDefs = gql`
 		createEvent(eventData: EventInput!): Event
 		rsvp(GuestInput: GuestInput!, eventId: ID!): Event
 		removeRSVP(eventId: ID!, guestId: ID!): Event
+		cancelEvent(eventId: ID!): User
 	}
 `;
 

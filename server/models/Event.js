@@ -35,9 +35,9 @@ const eventSchema = new Schema(
 );
 
 // when we query an event, we'll also get another field called `guestCount` with the number of rsvp's
-// eventSchema.virtual('rsvps').get(function () {
-//   return this.rsvps.length;
-// });
+eventSchema.virtual("guestCount").get(function () {
+	return this.rsvps.length;
+});
 
 const Event = model("Event", eventSchema);
 

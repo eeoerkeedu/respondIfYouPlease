@@ -102,6 +102,21 @@ const resolvers = {
 
 			throw AuthenticationError;
 		},
+		cancelEvent: async (parent, { eventId }, context) => {
+			// console.log(args);
+			if (eventId && context.user) {
+				const cancelledEvent = await Event.findOneAndDelete({ _id: eventId });
+				const updatedUser = await User.findOneAndUpdate(
+					{ _id: context.user._id },
+					{ $pull: { createdEvents: eventId } },
+					{ new: true }
+				);
+				console.log(updatedUser, cancelledEvent);
+				return updatedUser;
+			}
+
+			throw AuthenticationError;
+		},
 	},
 };
 

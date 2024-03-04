@@ -39,6 +39,11 @@ const userSchema = new Schema(
 	}
 );
 
+// when we query user, we'll also get another field called `createdEventsCount` with the number of events that user has created
+userSchema.virtual("createdEventsCount").get(function () {
+	return this.createdEvents.length;
+});
+
 // hash user password
 userSchema.pre("save", async function (next) {
 	if (this.isNew || this.isModified("password")) {
