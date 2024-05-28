@@ -2,7 +2,7 @@
 	"name": "respondIfYouPlease",
 	"version": "1.0.0",
 	"description": "",
-	"main": "server/server.js",
+	"main": "server/server.ts",
 	"scripts": {
 		"start": "node server/server.js",
 		"serve": "nodemon server/server.js",
@@ -15,6 +15,8 @@
 	"author": "",
 	"license": "ISC",
 	"devDependencies": {
-		"concurrently": "^8.2.0"
+		"@types/node": "^20.12.12",
+		"concurrently": "^8.2.0",
+		"typescript": "^5.4.5"
 	}
 }

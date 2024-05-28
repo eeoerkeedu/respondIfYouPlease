@@ -1,3 +1,4 @@
+
 const { Schema, model } = require("mongoose");
 
 // import schema from Guest.js
@@ -38,7 +39,6 @@ const eventSchema = new Schema(
 eventSchema.virtual("guestCount").get(function () {
 	return this.rsvps.length;
 });
-
 const Event = model("Event", eventSchema);
 
 module.exports = Event;

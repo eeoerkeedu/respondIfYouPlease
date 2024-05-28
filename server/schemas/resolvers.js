@@ -1,3 +1,4 @@
+// export {}
 const { User, Guest, Event } = require("../models");
 const { signToken, AuthenticationError } = require("../utils/auth");
 
