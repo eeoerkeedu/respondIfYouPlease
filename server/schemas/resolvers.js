@@ -75,14 +75,14 @@ const resolvers = {
 			// console.log(GuestInput, eventId);
 			if (GuestInput && eventId) {
 				const newGuest = await Guest.create(GuestInput);
-				const updateEvent = await Event.findByIdAndUpdate(
+				const updatedEvent = await Event.findByIdAndUpdate(
 					{ _id: eventId },
 					{ $push: { rsvps: newGuest._id } },
 					{ new: true }
 				);
-				// console.log(updateEvent, newGuest);
+				// console.log(updatedEvent, newGuest);
 
-				return { updateEvent, newGuest };
+				return updatedEvent;
 			}
 
 			throw AuthenticationError;
@@ -97,7 +97,7 @@ const resolvers = {
 					{ new: true }
 				);
 				const removedGuest = await Guest.findOneAndDelete({ _id: guestId });
-				console.log(updatedEvent, removedGuest);
+				// console.log(updatedEvent, removedGuest);
 				return updatedEvent;
 			}
 
