@@ -40,6 +40,12 @@ const resolvers = {
 
 			return { token, user };
 		},
+		updateUser: async (parent, args, context) => {
+			const user = await User.create(args);
+			const token = signToken(user);
+
+			return { token, user };
+		},
 		login: async (parent, { email, password }) => {
 			const user = await User.findOne({ email });
 
@@ -67,8 +73,45 @@ const resolvers = {
 				);
 
 				// console.log(newEvent, updatedUser);
-				return { newEvent, updatedUser };
+				return newEvent;
 			}
+		},
+
+		updateEvent: async (parent, { eventId, eventData }, context) => {
+			// console.log(eventId, eventData);
+			if (eventId && eventData && context.user) {
+				const modifiedEvent = await Event.findOneAndUpdate(
+					{ _id: eventId },
+					{
+						description: eventData.description,
+						eventDate: eventData.eventDate,
+						eventName: eventData.eventName,
+						location: eventData.location,
+					},
+					{ new: true }
+				);
+				// 	{ new: true }
+				// );
+				// console.log(updatedUser, modifiedEvent);
+				return modifiedEvent;
+			}
+
+			throw AuthenticationError;
+		},
+
+		cancelEvent: async (parent, { eventId }, context) => {
+			if (eventId && context.user) {
+				const cancelledEvent = await Event.findOneAndDelete({ _id: eventId });
+				const updatedUser = await User.findOneAndUpdate(
+					{ _id: context.user._id },
+					{ $pull: { createdEvents: eventId } },
+					{ new: true }
+				);
+				console.log(updatedUser, cancelledEvent);
+				return updatedUser;
+			}
+
+			throw AuthenticationError;
 		},
 
 		rsvp: async (parent, { GuestInput, eventId }, context) => {
@@ -99,21 +142,6 @@ const resolvers = {
 				const removedGuest = await Guest.findOneAndDelete({ _id: guestId });
 				// console.log(updatedEvent, removedGuest);
 				return updatedEvent;
-			}
-
-			throw AuthenticationError;
-		},
-		cancelEvent: async (parent, { eventId }, context) => {
-			// console.log(args);
-			if (eventId && context.user) {
-				const cancelledEvent = await Event.findOneAndDelete({ _id: eventId });
-				const updatedUser = await User.findOneAndUpdate(
-					{ _id: context.user._id },
-					{ $pull: { createdEvents: eventId } },
-					{ new: true }
-				);
-				console.log(updatedUser, cancelledEvent);
-				return updatedUser;
 			}
 
 			throw AuthenticationError;
