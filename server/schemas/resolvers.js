@@ -40,12 +40,30 @@ const resolvers = {
 
 			return { token, user };
 		},
-		updateUser: async (parent, args, context) => {
-			const user = await User.create(args);
-			const token = signToken(user);
+		
+		updateUser: async (
+			parent,
+			{ username, email, password, phoneNum },
+			context
+		) => {
+			const userData = await User.findById(context.user._id);
 
-			return { token, user };
+			if (!userData) {
+				throw AuthenticationError;
+			}
+			const updatedUser = await User.findOneAndUpdate(
+				{ _id: context.user._id },
+				{
+					username: username,
+					email: email,
+					password: password,
+					phoneNum: phoneNum,
+				},
+				{ new: true }
+			);
+			return updatedUser;
 		},
+
 		login: async (parent, { email, password }) => {
 			const user = await User.findOne({ email });
 
